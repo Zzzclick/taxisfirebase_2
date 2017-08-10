@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Taxi</string>
+    <string name="title_activity_maps">Gps</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="Activar">Activar/Desactivar
+        Disponibilidad</string>
+    <string name="Activo">Disponible</string>
+    <string name="Inactivo">No Disponible</string>
+</resources>
