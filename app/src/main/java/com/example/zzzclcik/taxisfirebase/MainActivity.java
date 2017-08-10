@@ -415,7 +415,7 @@ public void AceptarTerminos()
 
 
 
-    public boolean getValuePreference4(Context context) {
+    public boolean getValuePreference5(Context context) {
         SharedPreferences preferences = context.getSharedPreferences(PREFS_KEY, MODE_PRIVATE);
         return  preferences.getBoolean("terminos", false);
     }
