@@ -193,13 +193,16 @@ public class MainActivity extends AppCompatActivity implements  View.OnClickList
                                             estado=token.nextToken();
                                             idUsuario=token.nextToken();
 
-                                        if(!ValorViaje.equals("0#vacio")){
-                                             Intent intent = new Intent(getApplicationContext(),MapsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                            intent.putExtra("idTaxi",idTaxi);
-                                            intent.putExtra("idUsuario",idUsuario);
+                                        if(!ValorViaje.equals("0#vacio")) {
+                                            if (validatorUtil.isOnline())
+                                            {
+                                            Intent intent = new Intent(getApplicationContext(), MapsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                            intent.putExtra("idTaxi", idTaxi);
+                                            intent.putExtra("idUsuario", idUsuario);
                                             finish();
-                                            startActivity(intent);
-                                            overridePendingTransition(R.anim.left_in,R.anim.left_out);
+                                           // startActivity(intent);
+                                            overridePendingTransition(R.anim.left_in, R.anim.left_out);
+                                            }else Toast.makeText(getApplicationContext(),"No es posible conectarse ahora",Toast.LENGTH_LONG).show();
                                         }
 
 

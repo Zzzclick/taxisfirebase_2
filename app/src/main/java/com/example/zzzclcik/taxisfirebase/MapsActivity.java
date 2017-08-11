@@ -1,6 +1,5 @@
 package com.example.zzzclcik.taxisfirebase;
 
-import android.*;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,8 +11,6 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.Settings;
@@ -27,9 +24,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.Target;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -58,12 +52,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.StringTokenizer;
 
-import java.security.Permission;
 import android.Manifest;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, View.OnClickListener, LocationListener{
 
@@ -83,9 +72,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String latitudTaxi,longuitudTaxi;
     boolean auxViaje = false;
     ValidatorUtil validatorUtil = null;
-    private ShowcaseView showcaseView;
     private int contador=0;
-    private Target t1,t2,t3,t4,t5;
     String telefonoCel;
     ObtenerWebService hiloconexion;
     public boolean auxMapaNormal=true;
@@ -121,9 +108,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         cancel=(ImageView)findViewById(R.id.CancelImageView);
         telefonoIma=(ImageView)findViewById(R.id.ImaTel);
 
-        t1= new ViewTarget(R.id.ImaNormal, this);
-        t2= new ViewTarget(R.id.ImaHibrido, this);
-        t3= new ViewTarget(R.id.CancelImageView, this);
         ///////////////////////////////////////////////////////////////////////////////////////////
 //Obtiene valor de preferencia (la primera ocasión es por default true).
         boolean muestra2 = getValuePreference(getApplicationContext());
@@ -131,24 +115,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-        ////////////////////////////////////Inicio////////////////////////////////////////////////////////
-        showcaseView=new ShowcaseView.Builder(this)
-                .setTarget(Target.NONE)
-                .setOnClickListener(this)
-                .setContentTitle("Bienvenido")
-                .setContentText("Vamos a comenzar")
-                .setStyle(R.style.Transparencia)
-                .build();
-        showcaseView.setButtonText("Siguiente");
-        //Aqui se construye el showCaseView
-        ////////////////////////////////////Fin////////////////////////////////////////////////////////////
         ////////////////////////Inicio_______///////////////////////////////////////////
         //aqui si no es la primera vez que se abre la activity se oculta el showCaseView
         if(!muestra2){
 
             saveValuePreference(getApplicationContext(), false);
             contador=3;
-            showcaseView.hide();
+
 
         }
         /////////////////////////Fin_______/////////////////////////////////////////////
@@ -205,44 +178,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
 
-        switch (contador) {
-            case 0:
-                showcaseView.setShowcase(t1, true);
-                showcaseView.setContentTitle("Modo normal");
-                showcaseView.setContentText("Presiona para cambiar mapa a modo normal");
-                break;
-            case 1:
-
-                showcaseView.setShowcase(t2, true);
-                showcaseView.setContentTitle("Modo Satelital");
-                showcaseView.setContentText("Presiona para cambiar mapa a modo satelital");
-                break;
-            case 2:
-                showcaseView.setShowcase(t3, true);
-                showcaseView.setContentTitle("Cancelar servicio");
-                showcaseView.setContentText("presione para cancelar el servicio");
-                showcaseView.setButtonText("Finalizar");
-                break;
-
-            case 3:
-                showcaseView.hide();
-                boolean muestra2 = getValuePreference(getApplicationContext());
-                if(muestra2)
-                {
-                    saveValuePreference(getApplicationContext(), false);
-                    //  Toast.makeText(getApplicationContext(),"Primera vez:"+muestra, Toast.LENGTH_LONG).show();
-                }
-                break;
-            default:
-                showcaseView.hide();
-                boolean muestra21 = getValuePreference(getApplicationContext());
-                if(muestra21)
-                {
-                    saveValuePreference(getApplicationContext(), false);
-                    //  Toast.makeText(getApplicationContext(),"Primera vez:"+muestra, Toast.LENGTH_LONG).show();
-                }
-                break;
-        }
 
         contador++;
     }
@@ -255,7 +190,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CargarPeticionesT();
         auxViaje = false;
         aux=true;
-
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
     @Override
     protected void onDestroy(){
@@ -342,14 +279,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     {
 
             try {
-                    DatabaseReference mDatabase= FirebaseDatabase.getInstance().getReference().child("taxis");
-                    DatabaseReference currentUserBD=mDatabase.child(idTaxi);
-                    currentUserBD.child("estado").setValue("0");
-                    currentUserBD.child("ViajeA").setValue("0#vacio");
-                    DatabaseReference mDatabase2= FirebaseDatabase.getInstance().getReference().child("users");
-                    DatabaseReference currentUserBD2=mDatabase2.child(idUsuario);
-                    currentUserBD2.child("estado").setValue("0");
-                    currentUserBD2.child("ViajeA").setValue("0#vacio");
+                    DatabaseReference mDatabaseVia= FirebaseDatabase.getInstance().getReference().child("taxis");
+                    DatabaseReference mDatabaseVia2=mDatabaseVia.child(idTaxi);
+                    mDatabaseVia2.child("estado").setValue("0");
+                    mDatabaseVia2.child("ViajeA").setValue("0#vacio");
+                    DatabaseReference mDatabaseVia3= FirebaseDatabase.getInstance().getReference().child("users");
+                    DatabaseReference mDatabaseVia4=mDatabaseVia3.child(idUsuario);
+                    mDatabaseVia4.child("estado").setValue("0");
+                    mDatabaseVia4.child("ViajeA").setValue("0#vacio");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -400,13 +337,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             escuchadorUsuP=dataSnapshot.child("ViajeA").getValue().toString();
                             latitud2=dataSnapshot.child("latitud").getValue().toString();
                             longitud2=dataSnapshot.child("longitud").getValue().toString();
-                            telefonoCel=dataSnapshot.child("telefono").getValue().toString();
+
 
                         } catch (NullPointerException e) {
                             e.printStackTrace();
                         }
 
-                           // recreate();
+
                     }
 
                     @Override
@@ -452,6 +389,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             latitud2=dataSnapshot.child("latitud").getValue().toString();
                             longitud2=dataSnapshot.child("longitud").getValue().toString();
                             String nombre=dataSnapshot.child("name").getValue().toString();
+                            telefonoCel=dataSnapshot.child("telefono").getValue().toString();
                             System.out.println("QQQ_pasa aqui 451");
                             if (latitud2!=null || longitud2!=null||!latitud2.equals("desconocida")||!longitud2.equals("desconocida"))
                             { System.out.println("QQQ_pasa aqui 453");
@@ -468,7 +406,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
                                             .title(nombre)
                                             .position(new LatLng(latA,lonA)));
-                                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latA, lonA), 22));
+                                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latA, lonA), 20));
 
                                     System.out.println("QQQ_pasa aqui 475");
 
@@ -609,24 +547,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-    /////////////////Volver a mosrtrar el ShowCaseView_______Inicio//////////////////////////////////////////////
-    public  void Ayuda()
-    {
-        contador=0;
-        showcaseView.show();
-        showcaseView.setTarget(Target.NONE);
-        showcaseView.setContentTitle("Bienvenido");
-        showcaseView  .setContentText("Vamos a comenzar");
-        showcaseView.setButtonText("Siguiente");
-    }
-    /////////////////Volver a mosrtrar el ShowCaseView_______Final//////////////////////////////////////////////
 
     ///////////////////////////////////////Para el showCaseView por primera vez___Fin///////////////////////////////////////////
     public void HacerLlamada()
     {
         try {
             if (telefonoCel!=null) {
-                if (!telefonoCel.equalsIgnoreCase("no")||esNumero(telefonoCel)) {
+                if (!telefonoCel.equalsIgnoreCase("no")&&telefonoCel.matches("[0-9]*")) {
                     Intent i =new Intent(Intent.ACTION_CALL);
                     telefonoCel=telefonoCel.trim();
                     if(!telefonoCel.isEmpty()&&telefonoCel!=null||telefonoCel.equalsIgnoreCase("no"))
@@ -641,6 +568,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         startActivity(i);
                     }
                 }else if(telefonoCel.equalsIgnoreCase("no")){Toast.makeText(getApplicationContext(),"El usuario no a proporcionado su teléfono", Toast.LENGTH_SHORT).show();}
+                else if(!telefonoCel.matches("[0-9]*")){Toast.makeText(getApplicationContext(),"El usuario no a proporcionado su teléfono correctamente", Toast.LENGTH_SHORT).show();}
             }else{
                 Toast.makeText(getApplicationContext(),"El usuario no a proporcionado su teléfono", Toast.LENGTH_SHORT).show();
             }
@@ -898,6 +826,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return false;
         }
     }
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
 
+    }
 }
 

@@ -11,8 +11,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -58,6 +56,7 @@ import com.squareup.picasso.Picasso;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.StringTokenizer;
 
 public class Usuario extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,
         GoogleApiClient.ConnectionCallbacks, LocationListener , View.OnClickListener{
@@ -70,7 +69,7 @@ public class Usuario extends AppCompatActivity implements GoogleApiClient.OnConn
     private int CAMERA_REGUEST_CODE=0;
     private ProgressDialog progressDialog;
     private StorageReference mStorage;
-    private DatabaseReference mDatabase,mDataBaseCoord;
+    private DatabaseReference mDatabase,mDataBaseCoord,mDataBaseViaje,mDatabaseViaje;
     private static final String LOGTAG = "android-localizacion";
     AlertDialog alert = null;
     private String idUsusario,getIdUsuario,estado,tipoUser;
@@ -108,7 +107,9 @@ public class Usuario extends AppCompatActivity implements GoogleApiClient.OnConn
         disponibilidad = (ToggleButton)findViewById(R.id.toggleButton);
         txtperfil = (TextView)findViewById(R.id.textView3);
         irBandeja=(Button)findViewById(R.id.IrButton);
-irBandeja.setVisibility(View.INVISIBLE);
+
+        irBandeja.setVisibility(View.INVISIBLE);
+        disponibilidad.setVisibility(View.INVISIBLE);
 
 
 
@@ -339,6 +340,7 @@ irBandeja.setVisibility(View.INVISIBLE);
                 } else{ Toast.makeText(getApplicationContext(),"No es posible conectarse ahora",Toast.LENGTH_LONG).show();}
             }
         });
+        EscuchadoViaje();
     }
 
     public String getRamdomString()
@@ -752,5 +754,51 @@ irBandeja.setVisibility(View.INVISIBLE);
     /////////////////Volver a mosrtrar el ShowCaseView_______Final//////////////////////////////////////////////
 
     ///////////////////////////////////////Para el showCaseView por primera vez___Fin///////////////////////////////////////////
+    public void EscuchadoViaje()
+    {
+        try {
+            mDatabaseViaje = FirebaseDatabase.getInstance().getReference().child("taxis");
+            mDatabaseViaje= mDatabaseViaje.child(mAuth.getCurrentUser().getUid()).child("ViajeA");
+            mDatabaseViaje.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
+                    try {
+
+                        String idTaxi=mAuth.getCurrentUser().getUid();
+                        idTaxi=idTaxi.replace("$","");
+                        System.out.println("WWWW2"+mDatabaseViaje);
+                        String escuchadorViaje = dataSnapshot.getValue().toString();
+                        StringTokenizer token = new StringTokenizer(escuchadorViaje, "#");
+                        String idUsuario="nada",estado;
+                        estado=token.nextToken();
+                        idUsuario=token.nextToken();
+                        System.out.println("estado="+estado+"\nid="+idTaxi);
+                        if (!escuchadorViaje.equals("0#vacio"))
+                        {
+                            if (validatorUtil.isOnline()) {
+                                Intent intent = new Intent(getApplicationContext(),MapsActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                intent.putExtra("idTaxi",idTaxi);
+                                intent.putExtra("idUsuario",idUsuario);
+                                System.out.println("Cargando datos de viaje22\n"+idTaxi+" \n"+idUsuario);
+                                startActivity(intent);
+                                Toast.makeText(getApplicationContext(),"Cargando datos de viaje", Toast.LENGTH_SHORT).show();
+                            }else Toast.makeText(getApplicationContext(),"No es posible conectarse ahora",Toast.LENGTH_LONG).show();
+                            System.out.println("QQQ pasa pasa");
+                        }
+
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        System.out.println("|||||||||||||||||||||Trono aqui En cargar Viaje");
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+        } catch (NullPointerException e) {
+        }
+    }
 }

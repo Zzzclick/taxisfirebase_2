@@ -26,8 +26,6 @@ import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.Target;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -50,9 +48,7 @@ public class BandejaPeticiones extends AppCompatActivity {
     private FirebaseAuth mAuth;
     ValidatorUtil validatorUtil = null;
 
-    private ShowcaseView showcaseView;
     private int contador=0;
-    private Target t1,t2,t3,t4,t5;
     View viewLayout;
 
     LocationManager locationManager;
